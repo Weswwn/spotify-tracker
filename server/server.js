@@ -7,45 +7,44 @@ const cors = require('cors');
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
 app.use(morgan('dev'));
+require('dotenv').config()
 app.use(cors());
-const dotenv = require('dotenv');
-dotenv.config();
+app.use(express.static('public'));
+const querystring = require('querystring');
 
 
 const port = process.env.PORT;
-// app.get('/', (req, res) => res.send('Hello World!'))
-app.use(express.static('public'));
 
-
-
+const response_type = 'code';
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
+console.log(client_id, client_secret);
+const redirect_uri = 'http://localhost:3000/api/spotify_login/spotify_redirect';
+const scope = 'user-read-private user-top-read user-read-currently-playing user-read-playback-state';
 app.get('/authorize', (req, res) => {
-    const response_type = 'code';
-    const client_id = 'de91c8a755fa42c28803189462869a63';
-    const redirect_uri = 'http://localhost:3000/api/spotify_login/spotify_redirect';
-    const scope = 'user-read-private user-top-read user-read-currently-playing user-read-playback-state';
     res.redirect(`https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=${response_type}&redirect_uri=${redirect_uri}&scope=${scope}`); 
 })
 
+
 app.get('/api/spotify_login/spotify_redirect', (req,res) => {
-    // console.log(req.query);
-    axios.post('http://accounts.spotify.com/api/token', {
-        params: {
-            grant_type: "authorization_code",
-            code: req.query.code,
-            redirect_uri: 'http://localhost:3000/api/spotify_login/spotify_redirect',
-        },
-        headers: {
-            // Authorization: 'Basic' + 
-        }
+    const params = `grant_type=authorization_code&code=${req.query.code}&redirect_uri=${redirect_uri}&client_id=${client_id}&client_secret=${client_secret}`
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+    axios.post('https://accounts.spotify.com/api/token' , params, {
+        headers: headers
     })
     .then((response) => {
         console.log(response.data);
+        res.redirect('http://localhost:3000/#' + querystring.stringify({
+            access_token: response.data.access_token,
+            refresh_token: response.data.refresh_token
+        }));
     })
     .catch((error) => {
-        console.log(error);
-    })
 
+    })
 })
     
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Spotify app listening on port ${port}!`))
