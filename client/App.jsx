@@ -1,10 +1,13 @@
 import React from 'react';
-import TopSongs from './TopSongs.jsx';
 import axios from 'axios';
 import { BrowserRouter, Route, Link } from "react-router-dom";
 import SpotifyWebApi from 'spotify-web-api-js';
 const spotifyApi = new SpotifyWebApi();
 import queryString from 'query-string';
+
+import TopTracks from './TopTracks.jsx';
+import CurrentPlayback from './CurrentPlayback.jsx';
+import TopArtists from './TopArtists.jsx';
 
 class App extends React.Component {
     constructor(props) {
@@ -13,16 +16,18 @@ class App extends React.Component {
         console.log(access_token);
         this.state = {
             loggedin: access_token ? true : false,
-            topArtists: null,
-            topTracks: null,
-            nowPlaying: null
+            topArtists: [],
+            topTracks: [],
+            nowPlaying: []
         }
         if (access_token) {
             spotifyApi.setAccessToken(access_token);
         }
+        this.getCurrentPlaybackState = this.getCurrentPlaybackState.bind(this);
+        this.getTopArtists = this.getTopArtists.bind(this);
     }
     
-    test() {
+    getCurrentPlaybackState() {
         // console.log(queryString.parse(location.hash).access_token)
         spotifyApi.getMyCurrentPlaybackState()
             .then((response) => {
@@ -33,14 +38,34 @@ class App extends React.Component {
             })
     }
 
+    getTopArtists() {
+        // console.log(queryString.parse(location.hash).access_token)
+        spotifyApi.getMyTopArtists()
+            .then((response) => {
+                console.log(response);
+                this.setState({
+                    topArtists: response.items
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
     render() {
             return (
                 <div className="container">
-                {!this.state.loggedin ? <a href="/authorize">
-                    <button >Authorize Spotify Connection</button>
-                </a> : null}
-                <button onClick={this.test}>GET ALL THE FUCKIN DATA</button>
-            </div>
+                    {!this.state.loggedin ? <a href="/authorize">
+                        <button >Authorize Spotify Connection</button>
+                    </a> : 
+                    <div>
+                        <CurrentPlayback getCurrentPlaybackState={this.getCurrentPlaybackState}/>
+                        <TopTracks />
+                        <TopArtists getTopArtists={this.getTopArtists} topArtists={this.state.topArtists}/>
+                    </div>
+                    }
+
+                </div>
         )
     }
     

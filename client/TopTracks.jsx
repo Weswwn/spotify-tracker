@@ -1,17 +1,17 @@
 import React from 'react';
 
-class TopSongs extends React.Component {
+class TopTracks extends React.Component {
     constructor(props) {
         super(props)
     }
     render() {
         return (
             <div className="songs-list">
-                Songs
+                Top Tracks
             </div>
         )
     }
     
 }
 
-export default TopSongs;
+export default TopTracks;
