@@ -18,7 +18,6 @@ const port = process.env.PORT;
 const response_type = 'code';
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
-console.log(client_id, client_secret);
 const redirect_uri = 'http://localhost:3000/api/spotify_login/spotify_redirect';
 const scope = 'user-read-private user-top-read user-read-currently-playing user-read-playback-state';
 app.get('/authorize', (req, res) => {
@@ -35,14 +34,16 @@ app.get('/api/spotify_login/spotify_redirect', (req,res) => {
         headers: headers
     })
     .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         res.redirect('http://localhost:3000/#' + querystring.stringify({
             access_token: response.data.access_token,
             refresh_token: response.data.refresh_token
         }));
     })
     .catch((error) => {
-
+        res.redirect('/#' + querystring.stringify({
+            error: error
+        }))
     })
 })
     
