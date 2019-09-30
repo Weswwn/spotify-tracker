@@ -7,10 +7,8 @@ class TopArtists extends React.Component {
     }
     render() {
         return (
-            <div className="songs-list">
-                <h3>Top Artists</h3>
-                <div><button onClick={this.props.getTopArtists}>Update List!!</button></div>
-                {this.props.topArtists.length === 0 ? 'No Artists!' : this.props.topArtists.map((artist) => <TopArtistsEntry artist={artist}/>)}
+            <div key={this.props.topArtists.href} className="artists-list">
+                {this.props.topArtists.length === 0 ? 'No Artists!' : this.props.topArtists.map((artist) => <TopArtistsEntry key={artist.id} artist={artist}/>)}
             </div>
         )
     }

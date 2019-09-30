@@ -1,0 +1,50 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    /* width: 100%; */
+    justify-content: center; /*centers items on the line (the x-axis by default)*/
+    align-items: center; /*centers items on the cross-axis (y by default)*/
+    /* position: absolute; */
+}
+
+.tracks-list , .artists-list {
+    width: 400px;
+    /* display: flex; */
+    height: 700px;
+    overflow: auto;
+    padding: 5px;
+    text-align: center;
+    background-color: #F5F5F5;
+    /* border: 1px solid red; */
+    color: #555;
+    margin: 0px 5px 0px 5px;
+    /* border: 30px solid rgba(224, 30, 108, 0.3); */
+    /* background-image: url(http://tympanus.net/codrops-playground/assets/images/cssref/properties/background-clip/polygon1.jpg); */
+}
+
+
+img {
+    text-align: center;
+}
+
+.current-playback {
+    justify-content: center; /*centers items on the line (the x-axis by default)*/
+    align-items: center; /*centers items on the cross-axis (y by default)*/
+    width: 80%;
+    /* height: 700px; */
+    padding: 5px;
+    margin: 50px;
+    text-align: center;
+}
+
+.header {
+    padding: 60px;
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+    font-size: 30px;
+  }
+
+.btn {
+    background-color: #1abc9c;
+}

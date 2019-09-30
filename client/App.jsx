@@ -13,25 +13,27 @@ class App extends React.Component {
     constructor(props) {
         super(props)
         const access_token = queryString.parse(location.hash).access_token;
-        console.log(access_token);
         this.state = {
             loggedin: access_token ? true : false,
             topArtists: [],
             topTracks: [],
-            nowPlaying: []
+            nowPlaying: {}
         }
         if (access_token) {
             spotifyApi.setAccessToken(access_token);
         }
         this.getCurrentPlaybackState = this.getCurrentPlaybackState.bind(this);
         this.getTopArtists = this.getTopArtists.bind(this);
+        this.getTopTracks = this.getTopTracks.bind(this);
     }
     
     getCurrentPlaybackState() {
-        // console.log(queryString.parse(location.hash).access_token)
         spotifyApi.getMyCurrentPlaybackState()
             .then((response) => {
                 console.log(response);
+                this.setState({
+                    nowPlaying: response
+                })
             })
             .catch((error) => {
                 console.log(error);
@@ -39,7 +41,6 @@ class App extends React.Component {
     }
 
     getTopArtists() {
-        // console.log(queryString.parse(location.hash).access_token)
         spotifyApi.getMyTopArtists()
             .then((response) => {
                 console.log(response);
@@ -52,16 +53,38 @@ class App extends React.Component {
             })
     }
 
+    getTopTracks() {
+        spotifyApi.getMyTopTracks()
+            .then((response) => {
+                console.log(response);
+                this.setState({
+                    topTracks: response.items
+                })
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
     render() {
             return (
                 <div className="container">
                     {!this.state.loggedin ? <a href="/authorize">
                         <button >Authorize Spotify Connection</button>
-                    </a> : 
+                    </a> 
+                    : 
                     <div>
-                        <CurrentPlayback getCurrentPlaybackState={this.getCurrentPlaybackState}/>
-                        <TopTracks />
-                        <TopArtists getTopArtists={this.getTopArtists} topArtists={this.state.topArtists}/>
+                        <div className="current-playback">
+                            <button className="btn btn-outline-secondary" onClick={this.getCurrentPlaybackState}>View Current Stream Stats</button>
+                            <CurrentPlayback getPlayback={this.getCurrentPlaybackState} playbackState={this.state.nowPlaying}/>
+                        </div>
+
+                        <div className="container">
+                            <div className="top-tracks"><h3>Top Tracks {<button type="button" class="btn btn-outline-secondary" onClick={this.getTopTracks}>Update list!!</button>}</h3>
+                        <TopTracks getTopTracks={this.getTopTracks} topTracks={this.state.topTracks}/></div>
+                        
+                            <div className="top-artists"><h3>Top Artists {<button class="btn btn-outline-secondary" onClick={this.getTopArtists}>Update List!!</button> }</h3><TopArtists getTopArtists={this.getTopArtists} topArtists={this.state.topArtists}/></div>
+                        </div>
                     </div>
                     }
 

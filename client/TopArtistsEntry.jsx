@@ -7,12 +7,12 @@ class TopArtistsEntry extends React.Component {
     render() {
         console.log(this.props.artist);
         return (
-            <div className="top-artist-entry">
-                {this.props.artist.name}
+            <div key={this.props.artist.id} className="top-artist-entry">
+                    <div>{this.props.artist.name}</div>
+                    <img src={this.props.artist.images[1].url}></img>
             </div>
         )
     }
-    
 }
 
 export default TopArtistsEntry;
