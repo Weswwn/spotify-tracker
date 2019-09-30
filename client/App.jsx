@@ -90,7 +90,7 @@ class App extends React.Component {
                         <div className="container">
                             <form onSubmit={(e) => this.getTopTracks(e)} >
                                 <select onChange={(e) => this.handleChange(e)}>
-                                    <option defaultValue="long_term">Of All Time</option>
+                                    <option value="long_term">Of All Time</option>
                                     <option value="medium_term">Last Six Months</option>
                                     <option value="short_term">Last Four Weeks</option>
                                 </select>
