@@ -19,7 +19,7 @@ const response_type = 'code';
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const redirect_uri = 'http://localhost:3000/api/spotify_login/spotify_redirect';
-const scope = 'user-read-private user-top-read user-read-currently-playing user-read-playback-state';
+const scope = 'user-read-private user-top-read user-read-currently-playing user-read-playback-state user-read-recently-played';
 app.get('/authorize', (req, res) => {
     res.redirect(`https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=${response_type}&redirect_uri=${redirect_uri}&scope=${scope}`); 
 })

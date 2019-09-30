@@ -4,7 +4,6 @@
     /* width: 100%; */
     justify-content: center; /*centers items on the line (the x-axis by default)*/
     align-items: center; /*centers items on the cross-axis (y by default)*/
-    /* position: absolute; */
 }
 
 .tracks-list , .artists-list {
@@ -30,11 +29,10 @@ img {
 .current-playback {
     justify-content: center; /*centers items on the line (the x-axis by default)*/
     align-items: center; /*centers items on the cross-axis (y by default)*/
-    width: 80%;
-    /* height: 700px; */
     padding: 5px;
     margin: 50px;
     text-align: center;
+    background-color: #F5F5F5;
 }
 
 .header {
