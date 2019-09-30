@@ -18,7 +18,8 @@ class App extends React.Component {
             topArtists: [],
             topTracks: [],
             nowPlaying: {},
-            trackTimeRange: 'long_term'
+            trackTimeRange: 'long_term',
+            artistTimeRange: 'long_term'
         }
         if (access_token) {
             spotifyApi.setAccessToken(access_token);
@@ -41,9 +42,10 @@ class App extends React.Component {
             })
     }
 
-    getTopArtists() {
+    getTopArtists(e) {
+        e.preventDefault();
         //Define what time frame we want here using: {time_range: 'long_term'}
-        spotifyApi.getMyTopArtists()
+        spotifyApi.getMyTopArtists({time_range: this.state.artistTimeRange})
             .then((response) => {
                 console.log(response);
                 this.setState({
@@ -55,7 +57,8 @@ class App extends React.Component {
             })
     }
 
-    getTopTracks() {
+    getTopTracks(e) {
+        e.preventDefault();
         spotifyApi.getMyTopTracks({time_range: this.state.trackTimeRange})
             .then((response) => {
                 console.log(response);
@@ -69,9 +72,17 @@ class App extends React.Component {
     }
 
     handleChange(e) {
-        this.setState({
-            trackTimeRange: e.target.value
-        })
+        console.log(e.target.id);
+        if (e.target.id === 'track-select') {
+            this.setState({
+                trackTimeRange: e.target.value
+            })
+        }
+        if (e.target.id === 'artist-select') {
+            this.setState({
+                artistTimeRange: e.target.value
+            })
+        }
     }
 
     render() {
@@ -89,7 +100,7 @@ class App extends React.Component {
 
                         <div className="container">
                             <form onSubmit={(e) => this.getTopTracks(e)} >
-                                <select onChange={(e) => this.handleChange(e)}>
+                                <select id="track-select" onChange={(e) => this.handleChange(e)}>
                                     <option value="long_term">Of All Time</option>
                                     <option value="medium_term">Last Six Months</option>
                                     <option value="short_term">Last Four Weeks</option>
@@ -97,8 +108,16 @@ class App extends React.Component {
                                 <div className="top-tracks"><h3>Top Tracks {<input value="Update Tracks!" type="submit" class="btn btn-outline-secondary" />}</h3> 
                                 <TopTracks topTracks={this.state.topTracks}/></div>
                              </form>
-                        
-                            <div className="top-artists"><h3>Top Artists {<button class="btn btn-outline-secondary" onClick={this.getTopArtists}>Update List!!</button> }</h3><TopArtists getTopArtists={this.getTopArtists} topArtists={this.state.topArtists}/></div>
+
+                            <form onSubmit={(e) => this.getTopArtists(e)}>
+                                <select id="artist-select" onChange={(e) => this.handleChange(e)}>
+                                    <option value="long_term">Of All Time</option>
+                                    <option value="medium_term">Last Six Months</option>
+                                    <option value="short_term">Last Four Weeks</option>
+                                </select>
+                                <div className="top-artists"><h3>Top Artists {<input value="Update Artists!" type="submit" class="btn btn-outline-secondary"/>}</h3>
+                                <TopArtists getTopArtists={this.getTopArtists} topArtists={this.state.topArtists}/></div>
+                            </form>
                         </div>
                     </div>
                     }
