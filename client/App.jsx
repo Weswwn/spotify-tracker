@@ -19,7 +19,8 @@ class App extends React.Component {
             topTracks: [],
             nowPlaying: {},
             trackTimeRange: 'long_term',
-            artistTimeRange: 'long_term'
+            artistTimeRange: 'long_term',
+            user: null
         }
         if (access_token) {
             spotifyApi.setAccessToken(access_token);
@@ -27,6 +28,23 @@ class App extends React.Component {
         this.getCurrentPlaybackState = this.getCurrentPlaybackState.bind(this);
         this.getTopArtists = this.getTopArtists.bind(this);
         this.getTopTracks = this.getTopTracks.bind(this);
+        // this.getUserData = this.getUserData.bind(this);
+    }
+
+    componentDidMount() {
+        //Will only send get request for user data once user is logged in
+        if (this.state.loggedin) {
+            spotifyApi.getMe()
+                .then((response) => {
+                    console.log(response);
+                    this.setState({
+                        user: response
+                    })
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
+        }
     }
     
     getCurrentPlaybackState() {
@@ -47,6 +65,15 @@ class App extends React.Component {
         //Define what time frame we want here using: {time_range: 'long_term'}
         spotifyApi.getMyTopArtists({time_range: this.state.artistTimeRange})
             .then((response) => {
+                axios.post('/api/topArtists', {
+                    params: {
+                        data: response.items,
+                        timeRange: this.state.artistTimeRange
+                    }
+                })
+                    .then((response) => console.log(response))
+                    .catch((error) => console.log(error));
+
                 console.log(response);
                 this.setState({
                     topArtists: response.items
@@ -62,6 +89,7 @@ class App extends React.Component {
         spotifyApi.getMyTopTracks({time_range: this.state.trackTimeRange})
             .then((response) => {
                 console.log(response);
+
                 this.setState({
                     topTracks: response.items
                 })

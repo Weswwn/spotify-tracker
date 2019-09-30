@@ -7,7 +7,7 @@ class TopTracks extends React.Component {
     }
     render() {
         return (
-            <div key={this.props.topTracks.href} className="tracks-list">
+            <div className="tracks-list">
                 {this.props.topTracks.length === 0 ? 'No tracks!' : this.props.topTracks.map((track) => <TopTracksEntry key={track.id} track={track}/>)}
             </div>
         )

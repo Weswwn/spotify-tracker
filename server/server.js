@@ -11,6 +11,8 @@ require('dotenv').config()
 app.use(cors());
 app.use(express.static('public'));
 const querystring = require('querystring');
+const { db, User } = require('../database/database.js');
+
 
 
 const port = process.env.PORT;
@@ -34,7 +36,7 @@ app.get('/api/spotify_login/spotify_redirect', (req,res) => {
         headers: headers
     })
     .then((response) => {
-        // console.log(response.data);
+        // console.log(response.data);  
         res.redirect('http://localhost:3000/#' + querystring.stringify({
             access_token: response.data.access_token,
             refresh_token: response.data.refresh_token
@@ -44,6 +46,20 @@ app.get('/api/spotify_login/spotify_redirect', (req,res) => {
         res.redirect('/#' + querystring.stringify({
             error: error
         }))
+    })
+})
+
+//Receive Get Request to save data to database
+app.post('/api/topArtists' , (req, res) => {
+    console.log(req.body.params);
+    
+
+    topArtists.save((err, data) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(data);
+        }
     })
 })
     
