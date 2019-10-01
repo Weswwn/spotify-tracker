@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const axios = require('axios');
 const app = express();
 const cors = require('cors');
+const { filterArtistData , formatArtistData } = require('./filter.js');
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
 app.use(morgan('dev'));
@@ -11,7 +12,7 @@ require('dotenv').config()
 app.use(cors());
 app.use(express.static('public'));
 const querystring = require('querystring');
-const { db, User } = require('../database/database.js');
+const client = require('../database/database.js');
 
 
 
@@ -50,15 +51,43 @@ app.get('/api/spotify_login/spotify_redirect', (req,res) => {
 })
 
 //Receive Get Request to save data to database
-app.post('/api/topArtists' , (req, res) => {
-    console.log(req.body.params);
-    
-
-    topArtists.save((err, data) => {
+app.put('/api/topArtists' , (req, res) => {
+    const resultArray = filterArtistData(req.body.params.data);
+    const queryString = 'INSERT INTO artists(userID, timeRange, arrayOfArtists) VALUES($1, $2, $3)'
+    const values = [req.body.params.user.id, req.body.params.timeRange, JSON.stringify(resultArray)];
+    client.query(queryString, values, (err, response) => {
         if (err) {
-            res.send(err);
+            res.status(400).send(err);
         } else {
-            res.send(data);
+            res.send(response);
+        }
+    })
+    
+})
+
+app.get('/api/retrieve/topArtists' , (req, res) => {
+    console.log('CHECKKKKK: ' , req.query);
+    const queryString = 'SELECT * FROM artists where timeRange= $1 AND userID = $2'
+    const values = [req.query.timeRange, req.query.userid]
+    client.query(queryString, values, (err, response) => {
+        if (err) {
+            res.status(400).send(err);
+        } else {
+            // console.log(response.rows);
+            var result = formatArtistData(response.rows);
+            res.send(result);
+        }
+    })
+})
+
+app.post('/api/user' , (req, res) => {
+    const queryString = 'INSERT INTO spotifyusers(userID, country) VALUES($1, $2)';
+    const values = [req.body.params.id, req.body.params.country];
+    client.query(queryString, values, (err, response) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.send(response);
         }
     })
 })

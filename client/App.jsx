@@ -28,7 +28,6 @@ class App extends React.Component {
         this.getCurrentPlaybackState = this.getCurrentPlaybackState.bind(this);
         this.getTopArtists = this.getTopArtists.bind(this);
         this.getTopTracks = this.getTopTracks.bind(this);
-        // this.getUserData = this.getUserData.bind(this);
     }
 
     componentDidMount() {
@@ -40,10 +39,31 @@ class App extends React.Component {
                     this.setState({
                         user: response
                     })
+                    axios.post('/api/user', {
+                        params: response
+                    })
+                    .then((response) => console.log(response))
+                    .catch((error) => console.log(error));
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch((error) => {console.log(error);});
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.user !== this.state.user) {
+            axios.get('/api/retrieve/topArtists', {
+                params: {
+                    userid: this.state.user.id,
+                    timeRange: this.state.artistTimeRange,
+                }
+            })
+            .then((response) => {
+                console.log(response);
+                this.setState({
+                    topArtists: response.data
                 })
+            })
+            .catch((error) => console.log(error));
         }
     }
     
@@ -54,6 +74,7 @@ class App extends React.Component {
                 this.setState({
                     nowPlaying: response
                 })
+                
             })
             .catch((error) => {
                 console.log(error);
@@ -65,14 +86,15 @@ class App extends React.Component {
         //Define what time frame we want here using: {time_range: 'long_term'}
         spotifyApi.getMyTopArtists({time_range: this.state.artistTimeRange})
             .then((response) => {
-                axios.post('/api/topArtists', {
+                axios.put('/api/topArtists', {
                     params: {
                         data: response.items,
-                        timeRange: this.state.artistTimeRange
+                        timeRange: this.state.artistTimeRange,
+                        user: this.state.user
                     }
                 })
-                    .then((response) => console.log(response))
-                    .catch((error) => console.log(error));
+                .then((response) => console.log(response))
+                .catch((error) => console.log(error));
 
                 console.log(response);
                 this.setState({
@@ -89,10 +111,10 @@ class App extends React.Component {
         spotifyApi.getMyTopTracks({time_range: this.state.trackTimeRange})
             .then((response) => {
                 console.log(response);
-
                 this.setState({
                     topTracks: response.items
                 })
+                
             })
             .catch((error) => {
                 console.log(error);
@@ -121,6 +143,7 @@ class App extends React.Component {
                     </a> 
                     : 
                     <div>
+                            <a href="https://accounts.spotify.com/en/logout">Log Out!</a>
                         <div className="current-playback">
                             <button className="btn btn-outline-secondary" onClick={this.getCurrentPlaybackState}>View Current Stream Stats</button>
                             <CurrentPlayback getPlayback={this.getCurrentPlaybackState} playbackState={this.state.nowPlaying}/>

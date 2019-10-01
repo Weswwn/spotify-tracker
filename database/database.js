@@ -1,30 +1,15 @@
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true});
-var uniqueValidator = require('mongoose-unique-validator');
+const { Client } = require('pg')
+const client = new Client({
+    user:'Admin',
+    host: 'localhost',
+    database: 'spotify',
+})
+client.connect()
 
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  // we're connected!
-});
 
-var userSchema = new mongoose.Schema({
-    userID: {type: String, unique: true },
-    userEmail: String,
-    userCounter: String,
-    userTopTracksShortTerm: [{}],
-    userTopTracksMediumTerm: [{}],
-    userTopTracksLongTerm: [{}],
-    userTopArtistsShortTerm: [{}],
-    userTopArtistsMediumTerm: [{}],
-    userTopArtistsLongTerm: [{}],
-});
+// client.query('SELECT $1::text as message', ['Hello world!'], (err, res) => {
+//   console.log(err ? err.stack : res.rows[0].message) // Hello World!
+//   client.end()
+// })
 
-userSchema.plugin(uniqueValidator);
-
-var User = mongoose.model('User', userSchema);
-
-module.exports = {
-    db: db,
-    User: User
-};
+module.exports = client;
